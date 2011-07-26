@@ -17,6 +17,8 @@ generator:
 #        embed_relations:               []      # list here relations to embed in the response
 #        embedded_relations_hide:
 #          Category:                    [id]    # you can hide fields inside a certain embedded relation
+#        embedded_relations_fields:
+#          Category:                    [id]    # you can show fields inside a certain embedded relation
 #        global_additional_fields:      []      # list here additionnal calculated global fields
 #        hide:                          [id]    # list here the fields you don't want to expose
 #        max_items:                     0       # uncomment to fix an absolute limit to the number of items in the response
