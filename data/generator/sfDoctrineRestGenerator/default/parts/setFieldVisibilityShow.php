@@ -7,23 +7,14 @@
   protected function setFieldVisibilityForShow()
   {
 <?php
-$display                   = $this->configuration->getValue('get.display');
-$hide                      = $this->configuration->getValue('get.hide');
+$display                   = $this->configuration->getValue('show.display');
+$hide                      = $this->configuration->getValue('show.hide');
 
-$embed_relations           = $this->configuration->getValue('get.embed_relations');
-$embedded_relations_fields = $this->configuration->getValue('get.embedded_relations_fields');
-$embedded_relations_hide   = $this->configuration->getValue('get.embedded_relations_hide');
+$embed_relations           = $this->configuration->getValue('show.embed_relations');
+$embedded_relations_fields = $this->configuration->getValue('show.embedded_relations_fields');
+$embedded_relations_hide   = $this->configuration->getValue('show.embedded_relations_hide');
 
-$object_additional_fields  = $this->configuration->getValue('get.object_additional_fields');
-
-$display                   = $this->configuration->getValue('show.display', $display);
-$hide                      = $this->configuration->getValue('show.hide', $hide);
-
-$embed_relations           = $this->configuration->getValue('show.embed_relations', $embed_relations);
-$embedded_relations_fields = $this->configuration->getValue('show.embedded_relations_fields', $embedded_relations_fields);
-$embedded_relations_hide   = $this->configuration->getValue('show.embedded_relations_hide', $embedded_relations_hide);
-
-$object_additional_fields  = $this->configuration->getValue('show.object_additional_fields', $object_additional_fields);
+$object_additional_fields  = $this->configuration->getValue('show.object_additional_fields');
 ?><?php if (count($display) > 0): ?>
 <?php if (count($hide) > 0): ?>
     $accepted_keys = <?php echo var_export(array_flip(array_merge(array_diff($display, $hide), $embed_relations, $object_additional_fields)), true); ?>;

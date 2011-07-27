@@ -24,7 +24,7 @@ abstract class Base<?php echo ucfirst($this->getModuleName()) ?>GeneratorConfigu
 
   public function getDisplay($context = 'get')
   {
-    if($context === 'show')
+    if($context == 'show')
     {
         return <?php echo $this->asPhp(isset($this->config['show']['display']) ? $this->config['show']['display'] : array()) ?>;
 <?php unset($this->config['show']['display']) ?>
@@ -38,7 +38,7 @@ abstract class Base<?php echo ucfirst($this->getModuleName()) ?>GeneratorConfigu
 
   public function getEmbedRelations($context = 'get')
   {
-    if($context === 'show')
+    if($context == 'show')
     {
         return <?php echo $this->asPhp(isset($this->config['show']['embed_relations']) ? $this->config['show']['embed_relations'] : array()) ?>;
 <?php unset($this->config['show']['embed_relations']) ?>
@@ -52,7 +52,7 @@ abstract class Base<?php echo ucfirst($this->getModuleName()) ?>GeneratorConfigu
 
   public function getEmbeddedRelationsFields($context = 'get')
   {
-    if($context === 'show')
+    if($context == 'show')
     {
         $embedded_relations_fields = <?php echo $this->asPhp(isset($this->config['show']['embedded_relations_fields']) ? $this->config['show']['embedded_relations_fields'] : array()) ?>;
 <?php unset($this->config['show']['embedded_relations_fields']) ?>
@@ -74,7 +74,7 @@ abstract class Base<?php echo ucfirst($this->getModuleName()) ?>GeneratorConfigu
 
   public function getEmbeddedRelationsHide($context = 'get')
   {
-    if($context === 'show')
+    if($context == 'show')
     {
         $embedded_relations_hide = <?php echo $this->asPhp(isset($this->config['show']['embedded_relations_hide']) ? $this->config['show']['embedded_relations_hide'] : array()) ?>;
 <?php unset($this->config['show']['embedded_relations_hide']) ?>
@@ -115,7 +115,7 @@ abstract class Base<?php echo ucfirst($this->getModuleName()) ?>GeneratorConfigu
 
   public function getHide($context = 'get')
   {
-    if($context === 'show')
+    if($context == 'show')
     {
         return <?php echo $this->asPhp(isset($this->config['show']['hide']) ? $this->config['show']['hide'] : array()) ?>;
 <?php unset($this->config['show']['hide']) ?>
@@ -133,10 +133,18 @@ abstract class Base<?php echo ucfirst($this->getModuleName()) ?>GeneratorConfigu
 <?php unset($this->config['get']['max_items']) ?>
   }
 
-  public function getObjectAdditionalFields()
+  public function getObjectAdditionalFields($context = 'get')
   {
-    return <?php echo $this->asPhp(isset($this->config['get']['object_additional_fields']) ? $this->config['get']['object_additional_fields'] : array()) ?>;
+    if($context == 'show')
+    {
+        return <?php echo $this->asPhp(isset($this->config['show']['object_additional_fields']) ? $this->config['show']['object_additional_fields'] : array()) ?>;
+<?php unset($this->config['show']['object_additional_fields']) ?>
+    }
+    else
+    {
+        return <?php echo $this->asPhp(isset($this->config['get']['object_additional_fields']) ? $this->config['get']['object_additional_fields'] : array()) ?>;
 <?php unset($this->config['get']['object_additional_fields']) ?>
+    }
   }
 
   public function getSeparator()

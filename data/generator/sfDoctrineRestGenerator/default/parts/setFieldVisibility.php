@@ -6,7 +6,7 @@
    */
   protected function setFieldVisibility($context = 'get')
   {
-    if($context === 'show')
+    if($context == 'show')
     {
         $this->setFieldVisibilityForShow();
     }
