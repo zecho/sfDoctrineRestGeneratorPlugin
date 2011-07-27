@@ -56,7 +56,7 @@
     $this->embedGlobalAdditional<?php echo $field ?>($params);
 <?php endforeach; ?>
 
-    $this->setFieldVisibility();
+    $this->setFieldVisibility('show');
     $this->configureFields();
 
     $serializer = $this->getSerializer();

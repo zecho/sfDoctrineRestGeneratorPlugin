@@ -22,21 +22,46 @@ abstract class Base<?php echo ucfirst($this->getModuleName()) ?>GeneratorConfigu
 <?php unset($this->config['get']['default_format']) ?>
   }
 
-  public function getDisplay()
+  public function getDisplay($context = 'get')
   {
-    return <?php echo $this->asPhp(isset($this->config['get']['display']) ? $this->config['get']['display'] : array()) ?>;
+    if($context === 'show')
+    {
+        return <?php echo $this->asPhp(isset($this->config['show']['display']) ? $this->config['show']['display'] : array()) ?>;
+<?php unset($this->config['show']['display']) ?>
+    }
+    else
+    {
+        return <?php echo $this->asPhp(isset($this->config['get']['display']) ? $this->config['get']['display'] : array()) ?>;
 <?php unset($this->config['get']['display']) ?>
+    }
   }
 
-  public function getEmbedRelations()
+  public function getEmbedRelations($context = 'get')
   {
-    return <?php echo $this->asPhp(isset($this->config['get']['embed_relations']) ? $this->config['get']['embed_relations'] : array()) ?>;
+    if($context === 'show')
+    {
+        return <?php echo $this->asPhp(isset($this->config['show']['embed_relations']) ? $this->config['show']['embed_relations'] : array()) ?>;
+<?php unset($this->config['show']['embed_relations']) ?>
+    }
+    else
+    {
+        return <?php echo $this->asPhp(isset($this->config['get']['embed_relations']) ? $this->config['get']['embed_relations'] : array()) ?>;
 <?php unset($this->config['get']['embed_relations']) ?>
+    }
   }
 
-  public function getEmbeddedRelationsFields()
+  public function getEmbeddedRelationsFields($context = 'get')
   {
-    $embedded_relations_fields = <?php echo $this->asPhp(isset($this->config['get']['embedded_relations_fields']) ? $this->config['get']['embedded_relations_fields'] : array()) ?>;
+    if($context === 'show')
+    {
+        $embedded_relations_fields = <?php echo $this->asPhp(isset($this->config['show']['embedded_relations_fields']) ? $this->config['show']['embedded_relations_fields'] : array()) ?>;
+<?php unset($this->config['show']['embedded_relations_fields']) ?>
+    }
+    else
+    {
+        $embedded_relations_fields = <?php echo $this->asPhp(isset($this->config['get']['embedded_relations_fields']) ? $this->config['get']['embedded_relations_fields'] : array()) ?>;
+<?php unset($this->config['get']['embedded_relations_fields']) ?>
+    }
 
     foreach ($embedded_relations_fields as $relation_name => $display_fields)
     {
@@ -44,13 +69,21 @@ abstract class Base<?php echo ucfirst($this->getModuleName()) ?>GeneratorConfigu
     }
 
     return $embedded_relations_fields;
-<?php unset($this->config['get']['embedded_relations_fields']) ?>
-     
+
   }
 
-  public function getEmbeddedRelationsHide()
+  public function getEmbeddedRelationsHide($context = 'get')
   {
-    $embedded_relations_hide = <?php echo $this->asPhp(isset($this->config['get']['embedded_relations_hide']) ? $this->config['get']['embedded_relations_hide'] : array()) ?>;
+    if($context === 'show')
+    {
+        $embedded_relations_hide = <?php echo $this->asPhp(isset($this->config['show']['embedded_relations_hide']) ? $this->config['show']['embedded_relations_hide'] : array()) ?>;
+<?php unset($this->config['show']['embedded_relations_hide']) ?>
+    }
+    else
+    {
+        $embedded_relations_hide = <?php echo $this->asPhp(isset($this->config['get']['embedded_relations_hide']) ? $this->config['get']['embedded_relations_hide'] : array()) ?>;
+<?php unset($this->config['get']['embedded_relations_hide']) ?>
+    }
 
     foreach ($embedded_relations_hide as $relation_name => $hidden_fields)
     {
@@ -58,7 +91,6 @@ abstract class Base<?php echo ucfirst($this->getModuleName()) ?>GeneratorConfigu
     }
 
     return $embedded_relations_hide;
-<?php unset($this->config['get']['embedded_relations_hide']) ?>
   }
 
   public function getFormatsEnabled()
@@ -81,10 +113,18 @@ abstract class Base<?php echo ucfirst($this->getModuleName()) ?>GeneratorConfigu
 <?php unset($this->config['get']['global_additional_fields']) ?>
   }
 
-  public function getHide()
+  public function getHide($context = 'get')
   {
-    return <?php echo $this->asPhp(isset($this->config['get']['hide']) ? $this->config['get']['hide'] : array()) ?>;
+    if($context === 'show')
+    {
+        return <?php echo $this->asPhp(isset($this->config['show']['hide']) ? $this->config['show']['hide'] : array()) ?>;
+<?php unset($this->config['show']['hide']) ?>
+    }
+    else
+    {
+        return <?php echo $this->asPhp(isset($this->config['get']['hide']) ? $this->config['get']['hide'] : array()) ?>;
 <?php unset($this->config['get']['hide']) ?>
+    }
   }
 
   public function getMaxItems()

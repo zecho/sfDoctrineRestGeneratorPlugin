@@ -40,7 +40,14 @@ class sfDoctrineRestGeneratorConfiguration
         'pagination_page_size'        => $this->getPaginationPageSize(),
         'sort_custom'                 => $this->getSortCustom(),
         'sort_default'                => $this->getSortDefault()
-      )
+      ),
+      'show'     => array(
+        'display'                     => $this->getDisplay('show'),
+        'hide'                        => $this->getHide('show'),
+        'embed_relations'             => $this->getEmbedRelations('show'),
+        'embedded_relations_hide'     => $this->getEmbeddedRelationsHide('show'),
+        'embedded_relations_fields'   => $this->getEmbeddedRelationsFields('show'),
+      ),
     );
   }
 

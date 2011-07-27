@@ -30,3 +30,11 @@ generator:
 #        sort_default:                  []      # set to [column, asc|desc] in order to sort on a column
 #        filters:                               # list here the filters
 #          created_at:                  { date_format: 'd-m-Y', multiple: true }  # for instance
+      show:
+#        display:                       []      # list here the fields to render in the response
+#        embed_relations:               []      # list here relations to embed in the response
+#        embedded_relations_hide:
+#          Category:                    [id]    # you can hide fields inside a certain embedded relation
+#        embedded_relations_fields:
+#          Category:                    [id]    # you can show fields inside a certain embedded relation
+#        hide:                          [id]    # list here the fields you don't want to expose
