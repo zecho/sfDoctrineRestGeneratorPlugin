@@ -267,7 +267,7 @@ class sfDoctrineRestGenerator extends sfGenerator
 
     /* FIXME: Commented code below break getColumns return for concrete inheritance, is it necessary for other inheritance types? */
     /* foreach (array_diff(array_keys($table->getColumns()), $parentColumns) as $name) */
-    foreach ($table->getColumns() as $name)
+    foreach (array_keys($table->getColumns()) as $name)
     {
       $columns[] = new sfDoctrineColumn($name, $table);
     }
