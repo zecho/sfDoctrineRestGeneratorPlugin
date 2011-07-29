@@ -4,5 +4,5 @@
    */
   public function getUpdatePostValidators()
   {
-    return $this->getCreatePostValidators() ;
+    return array() ;
   }
