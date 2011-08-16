@@ -27,11 +27,14 @@ abstract class sfResourceSerializer
    */
   public static function getInstance($format = 'xml')
   {
-    $classname = sprintf('sfResourceSerializer%s', ucfirst($format));
+    static $serializers = array();
 
-    if (!class_exists($classname))
+    $serializers = sfConfig::get('app_sfDoctrineRestGeneratorPlugin_serializer', array());
+    $classname = isset($serializers[$format]) ? $serializers[$format] : sprintf('sfResourceSerializer%s', ucfirst($format));
+
+    if (sfConfig::get('sf_debug') && !class_exists($classname))
     {
-      throw new sfException(sprintf('Could not find seriaizer "%s"', $classname));
+      throw new sfException(sprintf('Could not find serializer "%s"', $classname));
     }
 
     return new $classname;
