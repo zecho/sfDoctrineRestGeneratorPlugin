@@ -1,4 +1,84 @@
-  /**
+
+  protected function selectForQuery(Doctrine_Query $q)
+  {
+    switch($this->getActionName())
+    {
+        case "show":
+<?php $display = $this->configuration->getValue('show.display'); ?>
+<?php if(count($display) > 0): ?>
+            $q->select('<?php echo implode(', ', $display); ?>');
+<?php endif; ?>
+            break;
+        default:
+<?php $display = $this->configuration->getValue('get.display'); ?>
+<?php if(count($display) > 0): ?>
+            $q->select('<?php echo implode(', ', $display); ?>');
+<?php endif; ?>
+            break;
+    }
+
+    return $q;
+  }
+
+  protected function selectRelationsForQuery(Doctrine_Query $q)
+  {
+    switch($this->getActionName())
+    {
+        case "show":
+<?php
+    $fields = array();
+    $embed_relations = $this->configuration->getvalue('show.embed_relations');
+    foreach ($embed_relations as $relation_name)
+    {
+      $fields[] = $relation_name.'.*';
+    }
+?>
+<?php if(count($fields) > 0): ?>
+            $q->addSelect('<?php echo implode(', ', $fields) ?>');
+<?php endif; ?>
+            break;
+        default:
+<?php
+    $fields = array();
+    $embed_relations = $this->configuration->getValue('get.embed_relations');
+    foreach ($embed_relations as $relation_name)
+    {
+      $fields[] = $relation_name.'.*';
+    }
+?>
+<?php if(count($fields) > 0): ?>
+            $q->addSelect('<?php echo implode(', ', $fields) ?>');
+<?php endif; ?>
+            break;
+    }
+
+    return $q;
+  }
+
+  protected function joinRelationsForQuery(Doctrine_Query $q)
+  {
+    switch($this->getActionName())
+    {
+        case "show":
+<?php $embed_relations = $this->configuration->getvalue('show.embed_relations'); ?>
+<?php foreach ($embed_relations as $embed_relation): ?>
+<?php if(!$this->isManyToManyRelation($embed_relation)): ?>
+            $q->leftJoin($this->model.'.<?php echo $embed_relation ?> <?php echo $embed_relation ?>');
+<?php endif; ?>
+<?php endforeach; ?>
+            break;
+        default:
+<?php $embed_relations = $this->configuration->getvalue('get.embed_relations'); ?>
+<?php foreach ($embed_relations as $embed_relation): ?>
+<?php if(!$this->isManyToManyRelation($embed_relation)): ?>
+            $q->leftJoin($this->model.'.<?php echo $embed_relation ?> <?php echo $embed_relation ?>');
+<?php endif; ?>
+<?php endforeach; ?>
+            break;
+    }
+  }
+
+ /**
    * Create the query for selecting objects, eventually along with related
    * objects
    *
@@ -6,32 +86,14 @@
    */
   public function query($params)
   {
-    $q = Doctrine_Query::create()
-<?php
-$display = $this->configuration->getValue('get.display');
-$embed_relations = $this->configuration->getValue('get.embed_relations');
+    $q = Doctrine_Query::create();
+    $this->selectForQuery($q);
+    $this->selectRelationsForQuery($q)
+         ->from($this->model.' '.$this->model);
+    $this->joinRelationsForQuery($q);
 
-$fields = $display;
-foreach ($embed_relations as $relation_name)
-{
-  $fields[] = $relation_name.'.*';
-}
-?>
-<?php if (count($display) > 0): ?>
-<?php $display = implode(', ', $fields); ?>
-      ->select('<?php echo $display ?>')
-<?php endif; ?>
-
-      ->from($this->model.' '.$this->model)
-<?php foreach ($embed_relations as $embed_relation): ?>
-<?php if (!$this->isManyToManyRelation($embed_relation)): ?>
-
-      ->leftJoin($this->model.'.<?php echo $embed_relation ?> <?php echo $embed_relation ?>')<?php endif; ?><?php endforeach; ?>;
-
-<?php
-$max_items = $this->configuration->getValue('get.max_items');
-if ($max_items > 0):
-?>
+<?php $max_items = $this->configuration->getValue('get.max_items') ?>
+<?php if ($max_items > 0): ?>
     $limit = <?php echo $max_items; ?>;
 
 <?php endif; ?>
