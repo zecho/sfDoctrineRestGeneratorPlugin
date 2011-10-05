@@ -29,6 +29,7 @@ class sfDoctrineRestGeneratorConfiguration
         'embed_relations'             => $this->getEmbedRelations(),
         'embedded_relations_hide'     => $this->getEmbeddedRelationsHide(),
         'embedded_relations_fields'   => $this->getEmbeddedRelationsFields(),
+        'embedded_relations_alias'    => $this->getEmbeddedRelationsAlias(),
         'fields'                      => $this->getFieldsGet(),
         'filters'                     => $this->getFilters(),
         'global_additional_fields'    => $this->getGlobalAdditionalFields(),
@@ -47,6 +48,7 @@ class sfDoctrineRestGeneratorConfiguration
         'embed_relations'             => $this->getEmbedRelations('show'),
         'embedded_relations_hide'     => $this->getEmbeddedRelationsHide('show'),
         'embedded_relations_fields'   => $this->getEmbeddedRelationsFields('show'),
+        'embedded_relations_alias'    => $this->getEmbeddedRelationsAlias('show'),
         'object_additional_fields'    => $this->getObjectAdditionalFields('show'),
       ),
     );

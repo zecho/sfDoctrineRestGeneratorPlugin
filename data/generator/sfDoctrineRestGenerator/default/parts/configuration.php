@@ -36,6 +36,64 @@ abstract class Base<?php echo ucfirst($this->getModuleName()) ?>GeneratorConfigu
     }
   }
 
+  public function getSelectEmbedRelationsFields($context = 'get')
+  {
+    if($context == 'show')
+	{
+		<?php
+		$embed_relations = (isset($this->config['show']['embed_relations']) ? (array)$this->config['show']['embed_relations'] : array());
+		$alias           = (isset($this->config['show']['embedded_relations_alias']) ? (array)$this->config['show']['embedded_relations_alias'] : array());
+		$display = array();
+		foreach($embed_relations as $relation)
+		{
+			$show = ((isset($this->config['show']['embedded_relations_fields']) && isset($this->config['show']['embedded_relations_fields'][$relation])) ? (array)$this->config['show']['embedded_relations_fields'][$relation] : array());
+			$hide = ((isset($this->config['show']['embedded_relations_hide']) && isset($this->config['show']['embedded_relations_hide'][$relation])) ? (array)$this->config['show']['embedded_relations_hide'][$relation] : array());
+
+			list($table, $model) = $this->getNestedTableAndRelationNamesFromRelationName($relation);
+			if(!$table)
+			{
+				$all = array_keys(Doctrine_Core::getTable($model)->getColumns());
+			}
+			else
+			{
+				$all = array_keys(Doctrine_Core::getTable($table)->getRelation($model)->getTable()->getColumns());
+			}
+
+			$display[$relation] =  $this->getFilteredDisplayFields($all, $show,	$hide);
+
+		}
+		?>
+		return <?php echo $this->asPhp($this->asFieldList($embed_relations, $display, $alias)) ?>;
+	}
+	else
+	{
+		<?php
+		$embed_relations = (isset($this->config['get']['embed_relations']) ? (array)$this->config['get']['embed_relations'] : array());
+		$alias           = (isset($this->config['get']['embedded_relations_alias']) ? (array)$this->config['get']['embedded_relations_alias'] : array());
+		$display = array();
+		foreach($embed_relations as $relation)
+		{
+			$show = ((isset($this->config['get']['embedded_relations_fields']) && isset($this->config['get']['embedded_relations_fields'][$relation])) ? (array)$this->config['get']['embedded_relations_fields'][$relation] : array());
+			$hide = ((isset($this->config['get']['embedded_relations_hide']) && isset($this->config['get']['embedded_relations_hide'][$relation])) ? (array)$this->config['get']['embedded_relations_hide'][$relation] : array());
+
+			list($table, $model) = $this->getNestedTableAndRelationNamesFromRelationName($relation);
+			if(!$table)
+			{
+				$all = array_keys(Doctrine_Core::getTable($model)->getColumns());
+			}
+			else
+			{
+				$all = array_keys(Doctrine_Core::getTable($table)->getRelation($model)->getTable()->getColumns());
+			}
+
+			$display[$relation] =  $this->getFilteredDisplayFields($all, $show,	$hide);
+
+		}
+		?>
+		return <?php echo $this->asPhp($this->asFieldList($embed_relations, $display, $alias)) ?>;
+	}
+  }
+
   public function getEmbedRelations($context = 'get')
   {
     if($context == 'show')
@@ -70,6 +128,22 @@ abstract class Base<?php echo ucfirst($this->getModuleName()) ?>GeneratorConfigu
 
     return $embedded_relations_fields;
 
+  }
+
+  public function getEmbeddedRelationsAlias($context = 'get')
+  {
+    if($context == 'show')
+    {
+        $embedded_relations_alias = <?php echo $this->asPhp(isset($this->config['show']['embedded_relations_alias']) ? $this->config['show']['embedded_relations_alias'] : array()) ?>;
+<?php unset($this->config['show']['embedded_relations_alias']) ?>
+    }
+    else
+    {
+        $embedded_relations_alias = <?php echo $this->asPhp(isset($this->config['get']['embedded_relations_alias']) ? $this->config['get']['embedded_relations_alias'] : array()) ?>;
+<?php unset($this->config['get']['embedded_relations_alias']) ?>
+    }
+
+    return $embedded_relations_alias;
   }
 
   public function getEmbeddedRelationsHide($context = 'get')

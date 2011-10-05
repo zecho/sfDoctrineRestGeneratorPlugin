@@ -163,6 +163,53 @@ class sfDoctrineRestGenerator extends sfGenerator
     return $php;
   }
 
+  public function getNestedTableAndRelationNamesFromRelationName($relation_name)
+  {
+	  $chain = explode('.', $relation_name);
+	  $relation = array_pop($chain);
+	  $table = array_pop($chain);
+
+	  // fallback relation_name, no nested relations
+	  if($table === NULL)
+	  {
+		  $relation = $relation_name;
+	  }
+
+	  return array($table, $relation);
+  }
+
+  public function asFieldList($relations, $relations_fields, $alias=null)
+  {
+	  $fields = array();
+	  foreach ($relations as $relation_name)
+	  {
+		  list($table, $rel_name) = $this->getNestedTableAndRelationNamesFromRelationName($relation_name);
+          if($alias && is_array($alias) && isset($alias[$relation_name]))
+          {
+              $rel_name = $alias[$relation_name];
+          }
+
+		  if(isset($relations_fields[$relation_name]) && is_array($relations_fields[$relation_name]))
+		  {
+			  foreach($relations_fields[$relation_name] as $field)
+              {
+				  $fields[] = $rel_name.'.'.$field;
+			  }
+		  }
+		  else
+		  {
+			  $fields[] = $rel_name.'.*';
+		  }
+	  }
+
+	  if(count($fields) == 0)
+	  {
+		  $fields = null;
+	  }
+
+	  return $fields;
+  }
+
   public function asPhp($variable)
   {
     return str_replace(array("\n", 'array ('), array('', 'array('), var_export($variable, true));
@@ -176,6 +223,29 @@ class sfDoctrineRestGenerator extends sfGenerator
   public function getRelations()
   {
     return $this->table->getRelations();
+  }
+
+  public function getFilteredDisplayFields($all, $show, $hide)
+  {
+	  $display = array();
+
+	  if(count($show) > 0)
+	  {
+		  $fields = array_intersect($all, $show);
+		  $display = $fields;
+	  }
+	  else
+	  {
+		  $fields = array_keys($this->getDefaultFieldsConfiguration());
+		  $display = $show; // all
+	  }
+
+	  if(count($hide) > 0)
+	  {
+		  $display = array_diff($fields, $hide);
+	  }
+
+	  return $display;
   }
 
   /**
@@ -226,18 +296,28 @@ class sfDoctrineRestGenerator extends sfGenerator
 
   public function isManyToManyRelation($alias)
   {
-    if ($relation = $this->table->getRelation($alias))
-    {
-      return Doctrine_Relation::MANY == $relation->getType()
-        &&
-        isset($relation['refTable'])
-        &&
-        (null === $this->getParentModel() || !Doctrine_Core::getTable($this->getParentModel())->hasRelation($relation->getAlias()));
-    }
-    else
-    {
-       throw new Exception(sprintf('The relation "%s" is not defined.', $alias));
-    }
+	  list($table, $real_alias) = $this->getNestedTableAndRelationNamesFromRelationName($alias);
+	  if(!$table)
+	  {
+		  $table = $this->table;
+	  }
+	  else
+	  {
+		  $table = Doctrine_Core::getTable($table);
+	  }
+
+	  if ($relation = $table->getRelation($real_alias))
+	  {
+		  return Doctrine_Relation::MANY == $relation->getType()
+			  &&
+			  isset($relation['refTable'])
+			  &&
+			  (null === $this->getParentModel($table) || !Doctrine_Core::getTable($this->getParentModel($table))->hasRelation($relation->getAlias()));
+	  }
+	  else
+	  {
+		  throw new Exception(sprintf('The relation "%s" is not defined.', $alias));
+	  }
   }
 
   /**
@@ -471,10 +551,10 @@ class sfDoctrineRestGenerator extends sfGenerator
   }
 
   /**
-   * Returns a sfValidator class name for a given column.
+   * Returns a class name for a given column.
    *
    * @param sfDoctrineColumn $column
-   * @return string    The name of a subclass of sfValidator
+   * @return string    The name of a subclass of validator
    */
   public function getCreateValidatorClassForColumn($column)
   {
@@ -614,10 +694,10 @@ class sfDoctrineRestGenerator extends sfGenerator
   }
 
   /**
-   * Returns a sfValidator class name for a given column.
+   * Returns a class name for a given column.
    *
    * @param sfDoctrineColumn $column
-   * @return string    The name of a subclass of sfValidator
+   * @return string    The name of a subclass of
    */
   public function getIndexValidatorClassForColumn($column)
   {

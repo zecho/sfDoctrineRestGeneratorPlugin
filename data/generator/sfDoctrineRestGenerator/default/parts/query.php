@@ -4,15 +4,31 @@
     switch($this->getActionName())
     {
         case "show":
-<?php $display = $this->configuration->getValue('show.display'); ?>
-<?php if(count($display) > 0): ?>
-            $q->select('<?php echo implode(', ', $display); ?>');
+<?php
+$fields = $this->getFilteredDisplayFields(
+    (array)array_keys($this->getDefaultFieldsConfiguration()),
+    $this->configuration->getValue('show.display'),
+    (array)$this->configuration->getValue('show.hide')
+);
+?>
+<?php if(count($fields) > 0): ?>
+            $q->select('<?php echo implode(', ', $fields); ?>');
+<?php else: ?>
+            $q->select($this->model.'.*');
 <?php endif; ?>
             break;
         default:
-<?php $display = $this->configuration->getValue('get.display'); ?>
-<?php if(count($display) > 0): ?>
-            $q->select('<?php echo implode(', ', $display); ?>');
+<?php
+$fields = $this->getFilteredDisplayFields(
+    (array)array_keys($this->getDefaultFieldsConfiguration()),
+    $this->configuration->getValue('get.display'),
+    (array)$this->configuration->getValue('get.hide')
+);
+?>
+<?php if(count($fields) > 0): ?>
+            $q->select('<?php echo implode(', ', $fields); ?>');
+<?php else: ?>
+            $q->select($this->model.'.*');
 <?php endif; ?>
             break;
     }
@@ -25,27 +41,13 @@
     switch($this->getActionName())
     {
         case "show":
-<?php
-    $fields = array();
-    $embed_relations = $this->configuration->getvalue('show.embed_relations');
-    foreach ($embed_relations as $relation_name)
-    {
-      $fields[] = $relation_name.'.*';
-    }
-?>
+<?php $fields = $this->configuration->getSelectEmbedRelationsFields('show') ?>
 <?php if(count($fields) > 0): ?>
             $q->addSelect('<?php echo implode(', ', $fields) ?>');
 <?php endif; ?>
             break;
         default:
-<?php
-    $fields = array();
-    $embed_relations = $this->configuration->getValue('get.embed_relations');
-    foreach ($embed_relations as $relation_name)
-    {
-      $fields[] = $relation_name.'.*';
-    }
-?>
+<?php $fields = $this->configuration->getSelectEmbedRelationsFields('get') ?>
 <?php if(count($fields) > 0): ?>
             $q->addSelect('<?php echo implode(', ', $fields) ?>');
 <?php endif; ?>
@@ -61,17 +63,41 @@
     {
         case "show":
 <?php $embed_relations = $this->configuration->getvalue('show.embed_relations'); ?>
+<?php $alias_relations = $this->configuration->getEmbeddedRelationsAlias('show'); ?>
 <?php foreach ($embed_relations as $embed_relation): ?>
 <?php if(!$this->isManyToManyRelation($embed_relation)): ?>
+<?php if(false !== strpos($embed_relation, '.')):
+    list($model, $relation) = $this->getNestedTableAndRelationNamesFromRelationName($embed_relation);
+    $alias = $relation;
+    if(isset($alias_relations[$embed_relation]))
+    {
+        $alias = $alias_relations[$embed_relation];
+    }
+?>
+            $q->leftJoin('<?php echo $model ?>.<?php echo $relation ?> <?php echo $alias ?>');
+<?php else: ?>
             $q->leftJoin($this->model.'.<?php echo $embed_relation ?> <?php echo $embed_relation ?>');
+<?php endif; ?>
 <?php endif; ?>
 <?php endforeach; ?>
             break;
         default:
 <?php $embed_relations = $this->configuration->getvalue('get.embed_relations'); ?>
+<?php $alias_relations = $this->configuration->getEmbeddedRelationsAlias('get'); ?>
 <?php foreach ($embed_relations as $embed_relation): ?>
 <?php if(!$this->isManyToManyRelation($embed_relation)): ?>
+<?php if(false !== strpos($embed_relation, '.')):
+    list($model, $relation) = $this->getNestedTableAndRelationNamesFromRelationName($embed_relation);
+    $alias = $relation;
+    if(isset($alias_relations[$embed_relation]))
+    {
+        $alias = $alias_relations[$embed_relation];
+    }
+?>
+            $q->leftJoin('<?php echo $model ?>.<?php echo $relation ?> <?php echo $alias ?>');
+<?php else: ?>
             $q->leftJoin($this->model.'.<?php echo $embed_relation ?> <?php echo $embed_relation ?>');
+<?php endif; ?>
 <?php endif; ?>
 <?php endforeach; ?>
             break;
@@ -195,7 +221,20 @@ $pagination_page_size = $this->configuration->getValue('get.pagination_page_size
 <?php endforeach; ?>
     foreach ($params as $name => $value)
     {
-      $q->andWhere($this->model.'.'.$name.' = ?', $value);
+      if($name != 'extra_params')
+      {
+          if(!is_array($value))
+          {
+            $q->andWhere($this->model.'.'.$name.' = ?', $value);
+          }
+          else
+          {
+            foreach($value as $model => $val)
+            {
+                $q->andWhere($name.'.'.$model.' = ?', $val);
+            }
+          }
+      }
     }
 
     return $q;

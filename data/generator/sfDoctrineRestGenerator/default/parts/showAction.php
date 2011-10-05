@@ -49,14 +49,13 @@
     $this->queryFetchOne($params);
     $this->forward404Unless(is_array($this->objects[0]));
 
-<?php foreach ($this->configuration->getValue('get.object_additional_fields') as $field): ?>
+<?php foreach ((array)$this->configuration->getValue('show.object_additional_fields') as $field): ?>
     $this->embedAdditional<?php echo $field ?>(0, $params);
 <?php endforeach; ?>
-<?php foreach ($this->configuration->getValue('get.global_additional_fields') as $field): ?>
+<?php foreach ((array)$this->configuration->getValue('show.global_additional_fields') as $field): ?>
     $this->embedGlobalAdditional<?php echo $field ?>($params);
 <?php endforeach; ?>
 
-    $this->setFieldVisibility('show');
     $this->configureFields();
 
     $serializer = $this->getSerializer();

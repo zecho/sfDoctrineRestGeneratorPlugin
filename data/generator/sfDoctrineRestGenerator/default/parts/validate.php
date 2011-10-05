@@ -13,7 +13,7 @@
     {
       if (!isset($validators[$name]))
       {
-        throw new sfException(sprintf('Could not validate extra field "%s"', $prefix.$name));
+        //throw new sfException(sprintf('Could not validate extra field "%s"', $prefix.$name));
       }
       else
       {
