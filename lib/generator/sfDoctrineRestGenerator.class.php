@@ -172,10 +172,34 @@ class sfDoctrineRestGenerator extends sfGenerator
 	  // fallback relation_name, no nested relations
 	  if($table === NULL)
 	  {
-		  $relation = $relation_name;
-	  }
+          foreach($this->table->getRelations() as $alias => $rel)
+          {
+              if($alias == $relation)
+              {
+                  $relation = $rel->getClass().' as '.$relation_name;
+              }
+          }
+      }
+      else
+      {
+          // FIXME: find parent model, fetch relations and get correction relation name + alias
+      }
 
 	  return array($table, $relation);
+  }
+
+  public function getRealModelFromRelationName($relationName)
+  {
+      $parts = explode('as', $relationName);
+      $model = trim($parts[0]);
+      return $model;
+  }
+
+  public function getRealAliasFromRelationName($relationName)
+  {
+      $parts = explode('as', $relationName);
+      $model = trim((count($parts) > 1) ? $parts[1] : $parts[0]);
+      return $model;
   }
 
   public function asFieldList($relations, $relations_fields, $alias=null)
@@ -183,7 +207,9 @@ class sfDoctrineRestGenerator extends sfGenerator
 	  $fields = array();
 	  foreach ($relations as $relation_name)
 	  {
-		  list($table, $rel_name) = $this->getNestedTableAndRelationNamesFromRelationName($relation_name);
+          list($table, $rel_name) = $this->getNestedTableAndRelationNamesFromRelationName($relation_name);
+          $rel_name = $this->getRealAliasFromRelationName($rel_name);
+
           if($alias && is_array($alias) && isset($alias[$relation_name]))
           {
               $rel_name = $alias[$relation_name];
@@ -296,7 +322,8 @@ class sfDoctrineRestGenerator extends sfGenerator
 
   public function isManyToManyRelation($alias)
   {
-	  list($table, $real_alias) = $this->getNestedTableAndRelationNamesFromRelationName($alias);
+      list($table, $real_alias) = $this->getNestedTableAndRelationNamesFromRelationName($alias);
+      $real_alias = $this->getRealAliasFromRelationName($real_alias);
 	  if(!$table)
 	  {
 		  $table = $this->table;

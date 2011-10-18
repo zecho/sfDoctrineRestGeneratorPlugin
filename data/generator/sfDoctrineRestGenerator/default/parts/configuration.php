@@ -52,11 +52,11 @@ abstract class Base<?php echo ucfirst($this->getModuleName()) ?>GeneratorConfigu
 			list($table, $model) = $this->getNestedTableAndRelationNamesFromRelationName($relation);
 			if(!$table)
 			{
-				$all = array_keys(Doctrine_Core::getTable($model)->getColumns());
+				$all = array_keys(Doctrine_Core::getTable($this->getRealModelFromRelationName($model))->getColumns());
 			}
 			else
 			{
-				$all = array_keys(Doctrine_Core::getTable($table)->getRelation($model)->getTable()->getColumns());
+				$all = array_keys(Doctrine_Core::getTable($table)->getRelation($this->getRealModelFromRelationName($model))->getTable()->getColumns());
 			}
 
 			$display[$relation] =  $this->getFilteredDisplayFields($all, $show,	$hide);
@@ -76,18 +76,17 @@ abstract class Base<?php echo ucfirst($this->getModuleName()) ?>GeneratorConfigu
 			$show = ((isset($this->config['get']['embedded_relations_fields']) && isset($this->config['get']['embedded_relations_fields'][$relation])) ? (array)$this->config['get']['embedded_relations_fields'][$relation] : array());
 			$hide = ((isset($this->config['get']['embedded_relations_hide']) && isset($this->config['get']['embedded_relations_hide'][$relation])) ? (array)$this->config['get']['embedded_relations_hide'][$relation] : array());
 
-			list($table, $model) = $this->getNestedTableAndRelationNamesFromRelationName($relation);
+            list($table, $model) = $this->getNestedTableAndRelationNamesFromRelationName($relation);
 			if(!$table)
 			{
-				$all = array_keys(Doctrine_Core::getTable($model)->getColumns());
+				$all = array_keys(Doctrine_Core::getTable($this->getRealModelFromRelationName($model))->getColumns());
 			}
 			else
 			{
-				$all = array_keys(Doctrine_Core::getTable($table)->getRelation($model)->getTable()->getColumns());
+				$all = array_keys(Doctrine_Core::getTable($table)->getRelation($this->getRealModelFromRelationName($model))->getTable()->getColumns());
 			}
 
 			$display[$relation] =  $this->getFilteredDisplayFields($all, $show,	$hide);
-
 		}
 		?>
 		return <?php echo $this->asPhp($this->asFieldList($embed_relations, $display, $alias)) ?>;
