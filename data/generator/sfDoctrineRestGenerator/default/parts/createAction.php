@@ -18,7 +18,7 @@
 
     try
     {
-      $this->validateCreate($content);
+       $content = $this->validateCreate($content);
     }
     catch (Exception $e)
     {

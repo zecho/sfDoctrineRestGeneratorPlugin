@@ -18,7 +18,7 @@
 
     try
     {
-      $this->validateUpdate($content);
+       $content = $this->validateUpdate($content);
     }
     catch (Exception $e)
     {

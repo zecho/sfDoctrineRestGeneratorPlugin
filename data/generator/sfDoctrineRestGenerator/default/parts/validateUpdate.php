@@ -7,9 +7,12 @@
   {
     $params = $this->parsePayload($payload);
 
+    $this->unset_var_array($params, $this->getFilterPayloadUpdate());
+
     $validators = $this->getUpdateValidators();
     $this->validate($params, $validators);
 
     $postvalidators = $this->getUpdatePostValidators();
     $this->postValidate($params, $postvalidators);
+    return $params;
   }

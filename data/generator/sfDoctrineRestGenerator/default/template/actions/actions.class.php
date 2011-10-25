@@ -70,4 +70,8 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends <?php echo $t
 <?php include dirname(__FILE__).'/../../parts/validateShow.php' ?>
 
 <?php include dirname(__FILE__).'/../../parts/validateUpdate.php' ?>
+
+<?php include dirname(__FILE__).'/../../parts/getFilterPayloadCreate.php' ?>
+
+<?php include dirname(__FILE__).'/../../parts/getFilterPayloadUpdate.php' ?>
 }

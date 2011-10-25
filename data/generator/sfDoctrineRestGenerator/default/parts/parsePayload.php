@@ -1,13 +1,14 @@
-  protected function parsePayload($payload, $force = false)
+protected function parsePayload($payload, $force = false)
   {
     if ($force || !isset($this->_payload_array))
     {
       $format = $this->getFormat();
       $serializer = $this->getSerializer();
-
+      
       if ($serializer)
       {
-        $payload_array = $serializer->unserialize($payload);
+	 $payload_array = $serializer->unserialize($payload);
+	 $payload_array = array_shift($payload_array);
       }
 
       if (!isset($payload_array) || !$payload_array)
