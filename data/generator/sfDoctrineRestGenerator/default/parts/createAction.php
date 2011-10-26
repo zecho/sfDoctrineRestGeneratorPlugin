@@ -48,6 +48,6 @@
     }
 
     $this->object = $this->createObject();
-    $this->updateObjectFromRequest($content);
+    $this->createObjectFromRequest($content);
     return $this->doSave();
   }

@@ -20,6 +20,8 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends <?php echo $t
 
 <?php include dirname(__FILE__).'/../../parts/createAction.php' ?>
 
+<?php include dirname(__FILE__).'/../../parts/createObjectFromRequest.php' ?>
+
 <?php include dirname(__FILE__).'/../../parts/createObject.php' ?>
 
 <?php include dirname(__FILE__).'/../../parts/deleteAction.php' ?>
