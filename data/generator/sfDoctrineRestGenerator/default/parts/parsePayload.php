@@ -4,10 +4,10 @@ protected function parsePayload($payload, $force = false)
     {
       $format = $this->getFormat();
       $serializer = $this->getSerializer();
-      
+
       if ($serializer)
       {
-	 $payload_array = $serializer->unserialize($payload);
+	 $payload_array = (array) $serializer->unserialize($payload);
 	 $payload_array = array_shift($payload_array);
       }
 
