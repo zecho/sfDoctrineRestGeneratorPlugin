@@ -5,40 +5,52 @@
    *
    * @return  void
    */
-  protected function configureFields()
-  {
-<?php
-$fields = $this->configuration->getValue('default.fields');
-$specific_configuration_directives = false;
-
-foreach ($fields as $field => $configuration)
+protected function configureFields()
 {
-  if (isset($configuration['date_format']) || isset($configuration['tag_name']))
-  {
-    $specific_configuration_directives = true;
-    continue;
-  }
-}
-?>
-<?php if ($specific_configuration_directives): ?>
-    foreach ($this->objects as $i => $object)
-    {
-<?php foreach ($fields as $field => $configuration): ?>
-<?php if (isset($configuration['date_format']) || isset($configuration['tag_name'])): ?>
-      if (isset($object['<?php echo $field ?>']))
-      {
-<?php if (isset($configuration['date_format'])): ?>
-        $object['<?php echo $field ?>'] = date('<?php echo $configuration['date_format'] ?>', strtotime($object['<?php echo $field ?>']));
-<?php endif; ?>
-<?php if (isset($configuration['tag_name'])): ?>
-        $object['<?php echo $configuration['tag_name'] ?>'] = $object['<?php echo $field ?>'];
-        unset($object['<?php echo $field ?>']);
-<?php endif; ?>
-      }
-<?php endif; ?>
-<?php endforeach; ?>
+ <?php
+      function configureObjectFields($fields, $configuration = array())
+   {
+      if (is_array($fields))
+	 foreach ($fields as $field => $value)
+	 {
+	    $configuration = array_merge($configuration, array($field));
+	    if (isset($value['date_format']) || isset($value['tag_name']))
+	    {
+	       $levelRelation = 1;
+	       echo 'if (isset($object';
 
-      $this->objects[$i] = $object;
-    }
-<?php endif; ?>
+	       for ($i=0; $i < sizeof($configuration);)
+	       {
+		  for ($i2=0;$i2 < $levelRelation;$i2++)
+		     echo "['".$configuration[$i++]."']";
+		  if ($i < sizeof($configuration))
+		  {
+		     $levelRelation++;
+		     $i = 0;
+		     echo ') && isset($object';
+		  }
+                    else
+                       echo "))\n{\n";
+	       }
+               if (isset($value['date_format']))
+                  echo ' $object'."['".join("']['", $configuration)."'] = date("."'".$value['date_format']."'".', strtotime($object'."['".join("']['", $configuration)."']));\n";
+               if (isset($value['tag_name']))
+                  echo '        $object['."'".$value['tag_name']."'".'] = $object['."'".join("']['", $configuration)."'];\n";
+               echo "}\n\n";
+               unset($configuration[sizeof($configuration) -1]);
+            }
+            else
+               $configuration = configureObjectFields($value, $configuration);
+         }
+      unset($configuration[sizeof($configuration) -1]);
+      return $configuration;
+   }
+?>
+
+     foreach ($this->objects as $i => $object)
+     {
+     	<?php $fields = $this->configuration->getValue('default.fields'); ?>
+     	<?php configureObjectFields($fields) ?>
+     	$this->objects[$i] = $object;
+     }
   }
