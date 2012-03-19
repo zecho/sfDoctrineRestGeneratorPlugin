@@ -15,7 +15,7 @@ class sfResourceSerializerXml extends sfResourceSerializer
 
   /**
    * Transform the payload into array assuming the payload is XML formatted.
-   * 
+   *
    * @param string $payload
    * @return array
    * @throw Exception
@@ -42,7 +42,7 @@ class sfResourceSerializerXml extends sfResourceSerializer
     {
       $errors = libxml_get_errors();
       $exception_message = '';
-      
+
       foreach ($errors as $error)
       {
         $exception_message .= $this->formatXmlError($error);
@@ -51,7 +51,7 @@ class sfResourceSerializerXml extends sfResourceSerializer
       libxml_clear_errors();
       throw new sfException("XML parsing error(s): \n".$exception_message);
     }
-    
+
     $return = $this->unserializeToArray($xml);
 
     // Shift any root node and return only the nested array
@@ -79,7 +79,7 @@ class sfResourceSerializerXml extends sfResourceSerializer
   protected function formatXmlError($error)
   {
     $return  = "\n\n";
-    
+
     switch ($error->level)
     {
       case LIBXML_ERR_WARNING:
@@ -107,7 +107,7 @@ class sfResourceSerializerXml extends sfResourceSerializer
   {
     if ($data instanceof SimpleXMLElement)
     {
-      $data = (array) $data;
+        $data = json_decode(json_encode($data), true);
     }
 
     if (is_array($data))
