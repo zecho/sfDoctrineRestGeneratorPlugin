@@ -22,11 +22,15 @@
 
       if ($error === $result)
       {
-        $error = array(array('message' => $error));
+        $error = array(array('code' => 406, 'description' => $error));
         $this->output = $serializer->serialize($error, 'error');
       }
       else
       {
+        if(is_array($result) && isset($result['error']) && !isset($result['error']['code']))
+        {
+            $result['error']['code'] = 406;
+        }
         $this->output = $serializer->serialize($result);
       }
 
