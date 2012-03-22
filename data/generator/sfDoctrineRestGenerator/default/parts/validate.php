@@ -33,18 +33,6 @@
 
     // are non given values required?
     foreach ($unused as $name)
-    {
-      try
-      {
         if (!is_array($validators[$name]))
-        {
           $validators[$name]->clean(null);
-        }
-      }
-      catch (Exception $e)
-      {
-        //throw new sfException(sprintf('Could not validate field "%s": %s', $prefix.$name, $e->getMessage()));
-        throw new sfException($e->getMessage());
-      }
-    }
   }
