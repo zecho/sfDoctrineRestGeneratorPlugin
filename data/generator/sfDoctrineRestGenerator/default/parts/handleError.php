@@ -1,7 +1,10 @@
 
   public function handleError(Exception $e)
   {
-      $this->getResponse()->setStatusCode(406);
+      $response = $this->getResponse();
+      $http_status_code = ($e instanceof sfValidatorError) ? 400 : 406;
+
+      $response->setStatusCode($http_status_code);
       try
       {
          $serializer = $this->getSerializer();
@@ -22,14 +25,14 @@
 
       if ($error === $result)
       {
-        $error = array(array('code' => 406, 'description' => $error));
+        $error = array(array('code' => $response->getStatusCode(), 'description' => $error));
         $this->output = $serializer->serialize($error, 'error');
       }
       else
       {
         if(is_array($result) && isset($result['error']) && !isset($result['error']['code']))
         {
-            $result['error']['code'] = 406;
+            $result['error']['code'] = $response->getStatusCode();
         }
         $this->output = $serializer->serialize($result);
       }
