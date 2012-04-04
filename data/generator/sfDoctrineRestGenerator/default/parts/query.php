@@ -219,22 +219,28 @@ $pagination_page_size = $this->configuration->getValue('get.pagination_page_size
     }
 <?php endif; ?>
 <?php endforeach; ?>
-    foreach ($params as $name => $value)
+    // DOS security
+    if(count($params) < 100)
     {
-      if($name != 'extra_params')
-      {
-          if(!is_array($value))
+        foreach ($params as $name => $value)
+        {
+          if($name != 'extra_params')
           {
-            $q->andWhere($this->model.'.'.$name.' = ?', $value);
+              if(!is_array($value))
+              {
+                $q->andWhere($this->model.'.'.$name.' = ?', $value);
+              }
+              else
+              {
+                $table = Doctrine_Core::getTable($name);
+                foreach($value as $model => $val)
+                {
+                    if($table->hasColumn($model))
+                        $q->andWhere($name.'.'.$model.' = ?', $val);
+                }
+              }
           }
-          else
-          {
-            foreach($value as $model => $val)
-            {
-                $q->andWhere($name.'.'.$model.' = ?', $val);
-            }
-          }
-      }
+        }
     }
 
     return $q;

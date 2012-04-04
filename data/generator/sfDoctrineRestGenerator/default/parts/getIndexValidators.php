@@ -35,5 +35,7 @@ $max_items = $this->configuration->getValue('get.max_items'); ?>
 <?php endforeach; ?>
 <?php endif; ?>
 
+    $validators['extra_params'] = new sfValidatorPass(array('required' => false));
+
     return $validators;
   }
