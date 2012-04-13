@@ -13,7 +13,7 @@
     {
       if (!isset($validators[$name]))
       {
-        throw new sfException(sprintf('Could not validate extra field "%s"', $prefix.$name));
+        throw new sfException($this->getContext()->getI18N()->__('Could not validate extra field "%field%"', array('%field%' => $prefix.$name)));
       }
       else
       {
@@ -24,7 +24,15 @@
         }
         else
         {
-          $validators[$name]->clean($value);
+            try {
+                $validators[$name]->clean($value);
+            }
+            catch(sfValidatorError $e)
+            {
+				$error = new sfDoctrineRestValidatorError($e->getMessage(), 0, $e);
+				$error->setParameter($name);
+				throw $error;
+            }
         }
 
         unset($unused[array_search($name, $unused, true)]);

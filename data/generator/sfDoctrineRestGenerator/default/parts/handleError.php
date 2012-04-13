@@ -2,7 +2,7 @@
   public function handleError(Exception $e)
   {
       $response = $this->getResponse();
-      $http_status_code = ($e instanceof sfValidatorError) ? 400 : 406;
+      $http_status_code = ($e instanceof sfDoctrineRestValidatorError) ? 400 : 406;
 
       $response->setStatusCode($http_status_code);
       try
@@ -15,7 +15,8 @@
       }
 
       $this->getResponse()->setContentType($serializer->getContentType());
-      $error = $e->getMessage();
+      $error     = $e->getMessage();
+      $parameter = ($e instanceof sfDoctrineRestValidatorError) ? $e->getParameter() : null;
 
       // event filter to enable customisation of the error message.
       $result = $this->dispatcher->filter(
@@ -25,7 +26,11 @@
 
       if ($error === $result)
       {
-        $error = array(array('code' => $response->getStatusCode(), 'description' => $error));
+        $error = array(array(
+            'code' => $response->getStatusCode(),
+            'description' => $this->getContext()->getI18N()->__($error),
+            'parameter'   => $parameter,
+        ));
         $this->output = $serializer->serialize($error, 'error');
       }
       else
@@ -33,6 +38,8 @@
         if(is_array($result) && isset($result['error']) && !isset($result['error']['code']))
         {
             $result['error']['code'] = $response->getStatusCode();
+            $result['error']['parameter'] = $parameter;
+            $result['error']['description'] = $this->getContext()->getI18N()->__($result['error']['description']);
         }
         $this->output = $serializer->serialize($result);
       }
