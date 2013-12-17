@@ -190,14 +190,14 @@ class sfDoctrineRestGenerator extends sfGenerator
 
   public function getRealModelFromRelationName($relationName)
   {
-      $parts = explode('as', $relationName);
+      $parts = explode(' as ', $relationName);
       $model = trim($parts[0]);
       return $model;
   }
 
   public function getRealAliasFromRelationName($relationName)
   {
-      $parts = explode('as', $relationName);
+      $parts = explode(' as ', $relationName);
       $model = trim((count($parts) > 1) ? $parts[1] : $parts[0]);
       return $model;
   }
